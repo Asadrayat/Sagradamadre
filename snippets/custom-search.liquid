@@ -1,0 +1,357 @@
+{%- liquid
+  assign search_action = routes.search_url
+  assign search_placeholder = 'Search Here'
+  assign all_label = '-All-'
+  assign label_category = 'Categories'
+
+  assign collections_for_filter = settings.search_collections
+-%}
+
+<div class="custom__searchbar__wrap medium-hide small-hide" data-search-bar>
+  <form class="search-bar" action="{{ search_action }}" method="get" role="search">
+    <div class="search-bar__grid">
+      <div class="search-bar__field search-bar__field--category">
+        <select
+          id="search-bar-category"
+          class="search-bar__select"
+          name="collection_url"
+          aria-label="{{ label_category | escape }}"
+        >
+          <option value="" selected>
+            {{- all_label | escape -}}
+          </option>
+          {%- if collections_for_filter and collections_for_filter.size > 0 -%}
+            {%- for collection in collections_for_filter -%}
+              <option value="{{ collection.url }}">
+                {{- collection.title | escape -}}
+              </option>
+            {%- endfor -%}
+          {%- endif -%}
+        </select>
+      </div>
+
+      <div class="search-bar__field search-bar__field--query">
+        <div class="search-bar__input-wrap">
+          <input
+            id="search-bar-query"
+            class="search-bar__input"
+            type="search"
+            name="q"
+            value="{{ search.terms | default: '' | escape }}"
+            placeholder="{{ search_placeholder | escape }}"
+            autocomplete="off"
+            enterkeyhint="search"
+            aria-autocomplete="list"
+            aria-expanded="false"
+            aria-owns="search-bar-results"
+            required
+          >
+          <button class="search-bar__submit" type="submit">
+            <span class="search-bar__submit-label">
+              {% render 'all-icons', name: 'search' %}
+            </span>
+          </button>
+        </div>
+      </div>
+        <div
+          id="search-bar-results"
+          class="search-bar__results"
+          role="listbox"
+          aria-label="Search suggestions"
+          hidden
+        >
+          <div class="predictive__search__categories"></div>
+          <div class="predictive__search__products"></div>
+          <div class="predictive__search__articles"></div>
+        </div>
+    </div>
+  </form>
+</div>
+
+{% javascript %}
+  (() => {
+    const wrappers = document.querySelectorAll('[data-search-bar]');
+
+    if (!wrappers.length) return;
+
+    const debounce = (fn, delay) => {
+      let timeoutId;
+      return (...args) => {
+        if (timeoutId) window.clearTimeout(timeoutId);
+        timeoutId = window.setTimeout(() => fn(...args), delay);
+      };
+    };
+
+    const buildSuggestUrl = (query) => {
+      const params = new URLSearchParams();
+      params.set('q', query);
+      params.set('resources[type]', 'product,collection,article');
+      params.set('resources[options][fields]', 'title,product_type,variants.title,vendor');
+      return `/search/suggest.json?${params.toString()}`;
+    };
+
+    const createGroupHeading = (label) => {
+      const heading = document.createElement('div');
+      heading.className = 'predictive__search__group-title';
+      heading.textContent = label;
+      return heading;
+    };
+
+    const createResultItem = (item, type, indexOffset) => {
+      const option = document.createElement('a');
+      option.className = 'search-bar__result-item';
+      option.href = item.url;
+      option.setAttribute('role', 'option');
+      option.setAttribute('data-index', String(indexOffset));
+      option.setAttribute('aria-selected', 'false');
+
+      const textWrapper = document.createElement('div');
+
+      const titleEl = document.createElement('div');
+      titleEl.className = 'search-bar__result-title';
+      titleEl.textContent = item.title || '';
+
+      const metaEl = document.createElement('div');
+      metaEl.className = 'search-bar__result-meta';
+      metaEl.textContent = type.charAt(0).toUpperCase() + type.slice(1);
+      console.log("Item", item);
+// Provided you Items
+// {
+//     "id": 651366072452,
+//     "body": "",
+//     "handle": "incense",
+//     "published_at": "2026-01-14T08:44:32.000Z",
+//     "title": "Incense",
+//     "url": "/collections/incense?_pos=1&_psq=in&_ss=e&_v=1.0",
+//     "featured_image": {
+//         "alt": null,
+//         "aspect_ratio": null,
+//         "height": null,
+//         "url": null,
+//         "width": null
+//     }
+// }
+// {
+//     "available": true,
+//     "body": "",
+//     "compare_at_price_max": "0.00",
+//     "compare_at_price_min": "0.00",
+//     "handle": "incense-sagrado-kundalini",
+//     "id": 10213057659012,
+//     "image": null,
+//     "price": "10.30",
+//     "price_max": "10.30",
+//     "price_min": "10.30",
+//     "tags": [],
+//     "title": "Incense Sagrado Kundalini",
+//     "type": "",
+//     "url": "/products/incense-sagrado-kundalini?_pos=5&_psq=in&_ss=e&_v=1.0",
+//     "variants": [],
+//     "vendor": "Sagradamarde",
+//     "featured_image": {
+//         "alt": null,
+//         "aspect_ratio": null,
+//         "height": null,
+//         "url": null,
+//         "width": null
+//     }
+// }
+
+      textWrapper.appendChild(titleEl);
+      textWrapper.appendChild(metaEl);
+
+      option.appendChild(textWrapper);
+
+      return option;
+    };
+
+    const renderResults = (resultsRoot, data, query) => {
+      const categoriesContainer = resultsRoot.querySelector('.predictive__search__categories');
+      const productsContainer = resultsRoot.querySelector('.predictive__search__products');
+      const articlesContainer = resultsRoot.querySelector('.predictive__search__articles');
+
+      // Clear previous content
+      [categoriesContainer, productsContainer, articlesContainer].forEach((container) => {
+        if (container) {
+          container.innerHTML = '';
+          container.classList.remove('predictive__search__group--hidden');
+        }
+      });
+
+      if (!data || !query || !query.trim()) {
+        resultsRoot.hidden = true;
+        return;
+      }
+
+      // Predictive search: resources.results.{products,collections,articles}
+      const resourcesRoot = data.resources && data.resources.results
+        ? data.resources.results
+        : {};
+
+      const products = resourcesRoot.products || [];
+      const collections = resourcesRoot.collections || [];
+      const articles = resourcesRoot.articles || [];
+
+      // Nothing? Hide the root container.
+      if (!products.length && !collections.length && !articles.length) {
+        resultsRoot.hidden = true;
+        return;
+      }
+
+      let globalIndex = 0;
+
+      // Categories (collections)
+      if (categoriesContainer && collections.length) {
+        categoriesContainer.appendChild(createGroupHeading('Categories'));
+
+        collections.forEach((item) => {
+          const option = createResultItem(item, 'collection', globalIndex);
+          categoriesContainer.appendChild(option);
+          globalIndex += 1;
+        });
+      } else if (categoriesContainer) {
+        categoriesContainer.classList.add('predictive__search__group--hidden');
+      }
+
+      // Products
+      if (productsContainer && products.length) {
+        productsContainer.appendChild(createGroupHeading('Products'));
+
+        products.forEach((item) => {
+          const option = createResultItem(item, 'product', globalIndex);
+          productsContainer.appendChild(option);
+          globalIndex += 1;
+        });
+      } else if (productsContainer) {
+        productsContainer.classList.add('predictive__search__group--hidden');
+      }
+
+      // Articles
+      if (articlesContainer && articles.length) {
+        articlesContainer.appendChild(createGroupHeading('Articles'));
+
+        articles.forEach((item) => {
+          const option = createResultItem(item, 'article', globalIndex);
+          articlesContainer.appendChild(option);
+          globalIndex += 1;
+        });
+      } else if (articlesContainer) {
+        articlesContainer.classList.add('predictive__search__group--hidden');
+      }
+
+      resultsRoot.hidden = false;
+    };
+
+    wrappers.forEach((wrapper) => {
+      const form = wrapper.querySelector('form.search-bar');
+      const input = wrapper.querySelector('.search-bar__input');
+      const resultsRoot = wrapper.querySelector('.search-bar__results');
+
+      if (!form || !input || !resultsRoot) return;
+
+      let activeIndex = -1;
+
+      const getAllOptions = () =>
+        resultsRoot.querySelectorAll('.search-bar__result-item[role="option"]');
+
+      const updateActiveDescendant = () => {
+        const options = getAllOptions();
+
+        options.forEach((option, index) => {
+          const isActive = index === activeIndex;
+          option.setAttribute('aria-selected', isActive ? 'true' : 'false');
+          if (isActive) {
+            option.scrollIntoView({ block: 'nearest' });
+          }
+        });
+      };
+
+      const clearResults = () => {
+        const groups = resultsRoot.querySelectorAll(
+          '.predictive__search__categories, .predictive__search__products, .predictive__search__articles'
+        );
+        groups.forEach((group) => {
+          group.innerHTML = '';
+        });
+        resultsRoot.hidden = true;
+        activeIndex = -1;
+        input.setAttribute('aria-expanded', 'false');
+      };
+
+      const handleInput = async () => {
+        const query = input.value.trim();
+
+        if (query.length < 2) {
+          clearResults();
+          return;
+        }
+
+        try {
+          const response = await fetch(buildSuggestUrl(query), {
+            headers: {
+              Accept: 'application/json',
+            },
+          });
+
+          if (!response.ok) {
+            clearResults();
+            return;
+          }
+
+          const data = await response.json();
+          renderResults(resultsRoot, data, query);
+
+          const hasResults = !!getAllOptions().length;
+          input.setAttribute('aria-expanded', hasResults ? 'true' : 'false');
+          activeIndex = hasResults ? 0 : -1;
+          updateActiveDescendant();
+        } catch (error) {
+          clearResults();
+        }
+      };
+
+      const debouncedInput = debounce(handleInput, 180);
+
+      input.addEventListener('input', () => {
+        debouncedInput();
+      });
+
+      input.addEventListener('keydown', (event) => {
+        const options = getAllOptions();
+        const hasOptions = options.length > 0;
+
+        if (!hasOptions) return;
+
+        if (event.key === 'ArrowDown') {
+          event.preventDefault();
+          activeIndex = Math.min(activeIndex + 1, options.length - 1);
+          updateActiveDescendant();
+        } else if (event.key === 'ArrowUp') {
+          event.preventDefault();
+          activeIndex = Math.max(activeIndex - 1, 0);
+          updateActiveDescendant();
+        } else if (event.key === 'Enter') {
+          if (activeIndex >= 0 && activeIndex < options.length) {
+            event.preventDefault();
+            const target = options[activeIndex];
+            if (target && typeof target.click === 'function') {
+              target.click();
+            }
+          }
+        } else if (event.key === 'Escape') {
+          clearResults();
+        }
+      });
+
+      document.addEventListener('click', (event) => {
+        if (!wrapper.contains(event.target)) {
+          clearResults();
+        }
+      });
+
+      form.addEventListener('submit', () => {
+        clearResults();
+      });
+    });
+  })();
+{% endjavascript %}

@@ -1,0 +1,84 @@
+<product-card>
+  <div class="product-card {% if product.media[1] != null %}is--hoverable{% endif %}">
+    <div class="product-card-wrapper">
+      <div class="card-media">
+        {% if product.featured_image %}
+          {{
+            product.featured_image
+            | image_url: width: product.featured_image.width
+            | image_tag: class: 'primary_image', loading: 'lazy'
+          }}
+        {% endif %}
+
+        {% if product.media[1] != null %}
+          {{
+            product.media[1]
+            | image_url: width: product.media[1].width
+            | image_tag: class: 'second_image', loading: 'lazy'
+          }}
+        {% endif %}
+        <a class="absolute__link" href="{{ product.url }}"></a>
+        {% comment %} <div class="sale-badge">Best Seller</div> {% endcomment %}
+        {% comment %}
+          <button
+            class="card-qatc-btn"
+            data-product-handle="{{ product.handle }}"
+            data-variant-id="{{ product.selected_or_first_available_variant.id }}"
+          >
+            Quick View
+          </button>
+        {% endcomment %}
+      </div>
+      <div class="card-info">
+        <div class="top__wrap__">
+          <h4>{{ product.title | escape }}</h4>
+        {% for tag in customer.tags %}
+        {% assign tag_down = tag | downcase %}
+      {% endfor %}  
+      {% if tag_down contains 'distributor' %}
+        <div class="card-price care-new-price"> <p class="cnp-regular">{{ product.selected_or_first_available_variant.price | times: settings.distributor_discount_percentage | divided_by: 100 | money }}</p></div>
+      {% elsif tag_down contains 'wholesaler' %}
+       <div class="card-price care-new-price"> <p class="cnp-regular">{{ product.selected_or_first_available_variant.price | times: settings.wholesaler_discount_percentage | divided_by: 100 | money }}</p></div>
+       {% else %}
+          <div class="card-price care-new-price">
+            {% if product.selected_or_first_available_variant.price
+                < product.selected_or_first_available_variant.compare_at_price
+            %}
+              <p class="cnp-regular">{{ product.selected_or_first_available_variant.price | money }}</p>
+              <p class="cnp-compare">
+                <s>{{ product.selected_or_first_available_variant.compare_at_price | money }}</s>
+              </p>
+            {% else %}
+              <p class="cnp-regular">{{ product.selected_or_first_available_variant.price | money }}</p>
+            {% endif %}
+          </div>
+      {% endif %}
+
+          {% render 'color-swatch', product: product %}
+          {% for tag in product.tags %}
+            {% assign tag_handle = tag | handleize %}
+          {% endfor %}
+          {% if tag_handle == 'sale' and customer.has_account %}
+          <div class="combo__offer ">
+            Buy 1 Get 1 Free
+          </div>
+          {% endif %}
+        </div>
+        <div class="card__cta">
+          <button
+            class="card-qatc-btn"
+            data-product-handle="{{ product.handle }}"
+            data-variant-id="{{ product.selected_or_first_available_variant.id }}"
+          >
+            ADD TO CART
+            <span>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                <!--!Font Awesome Free v5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm144 276c0 6.6-5.4 12-12 12h-92v92c0 6.6-5.4 12-12 12h-56c-6.6 0-12-5.4-12-12v-92h-92c-6.6 0-12-5.4-12-12v-56c0-6.6 5.4-12 12-12h92v-92c0-6.6 5.4-12 12-12h56c6.6 0 12 5.4 12 12v92h92c6.6 0 12 5.4 12 12v56z"/>
+              </svg>
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</product-card>

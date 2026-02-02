@@ -1,0 +1,284 @@
+{% liquid
+  assign id = section.id
+%}
+
+<style>
+  #shopify-section-{{id}} {
+    box-sizing: border-box;
+    margin-top: {{section.settings.margin_top | append: 'px'}};
+    margin-bottom: {{section.settings.margin_bottom | append: 'px'}};
+    padding-top: {{section.settings.padding_top | append: 'px'}};
+    padding-bottom: {{section.settings.padding_bottom | append: 'px'}};
+    p.heading__ {
+        margin: 0 0 26px;
+    }
+    .form__wrap form {
+        display: block;
+    }
+     .btn__wrap__ {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        a {
+            width: 100%;
+            text-align: center;  
+            font-family: var(--font-body-family);
+            font-weight: 100;
+            @media(max-width: 768px) {
+              min-width: unset;
+              min-height: unset;
+              padding: 10px 5px;
+            }            
+        }
+        a.button.active {
+            background-color: #eeb101;
+        }
+      }
+      h2.title__ {
+          font-weight: 400;
+          text-align: center;
+          margin: 15px 0;
+          font-size: 24px;
+          line-height: 120%;
+      }
+      .cf-form-actions button, .bottom__content__ .button{
+        width: 100%;
+        text-align: center;
+      }
+      .bottom__content__ p {
+          {% comment %} text-align: center; {% endcomment %}
+          margin: 6px 0;
+      }
+      .cf-field input:not([type=checkbox]):not([type=radio]):focus, .cf-field input:not([type=checkbox]):not([type=radio]):hover {
+        box-shadow: 0 0 1.5px rgba(var(--color-foreground),1);
+      }
+      .cf-field input:not([type=checkbox]):not([type=radio]) {
+        border-radius: 6px;
+      }
+  }
+   
+  .container-{{  id }}.page-width {
+    max-width: 900px;
+    margin: auto;
+    position: relative;
+    background-color: #fff;
+    padding: 50px;
+    border-radius: 10px;
+    -webkit-box-shadow: 0px 10px 34px -15px rgba(0, 0, 0, 0.24);
+    box-shadow: 0px 10px 34px -15px rgba(0, 0, 0, 0.24);
+    @media(max-width: 1400px) {
+      max-width: calc(100% - (100% / 3));
+    }
+    @media(max-width: 768px) {
+      padding: 15px;
+      max-width: 100%;
+      margin: 0 15px;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+  }
+  @media(max-width: 600px) {
+    #shopify-section-{{id}} {
+      margin-top: {{section.settings.margin_top_m | append: 'px'}};
+      margin-bottom: {{section.settings.margin_bottom_m | append: 'px'}};
+      padding-top: {{section.settings.padding_top_m | append: 'px'}};
+      padding-bottom: {{section.settings.padding_bottom_m | append: 'px'}};
+    }
+  }
+</style>
+
+<div class="sec-{{ id }}">
+  <div class="container-{{  id }} {% unless section.settings.full_width %}page-width{% endunless %}">
+    <p class="heading__">{{ section.settings.heading }}</p>
+    <div class="wrapper-{{ id }}">
+      {% if section.blocks.size > 0 %}
+        <div class="btn__wrap__">
+          {% for block in section.blocks %}
+            <a class="button {% if block.settings.template == page.handle %}active{% endif %}" href="{{ block.settings.url }}">{{ block.settings.label }}</a>
+          {% endfor %}
+        </div>
+      {% endif %}
+      <h2 class="title__ ">{{ section.settings.title }}</h2>
+      <div class="form__wrap">
+        <form data-cf-form="{{ section.settings.form_id | strip }}"></form>
+      </div>
+      <div class="bottom__content__">
+        <p class="{{ section.settings.alignment }}">{{ section.settings.bottom_content }}</p>
+        <a href="{{ section.settings.bottom_cta_url }}" class="button">{{ section.settings.bottom_cta_label }}</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Custom Form",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "label": "Full Width Section",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "form_id",
+      "label": "FormID"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "info": "Form Title"
+    },
+    {
+      "type": "header",
+      "content": "Bottom"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "bottom_content",
+      "label": "Boottom Content",
+      "default": "Already have account?"
+    },
+    {
+      "type": "text_alignment",
+      "id": "alignment",
+      "label": "Text alignment",
+      "default": "center"
+    },
+    {
+        "type": "text",
+        "id": "bottom_cta_label",
+        "label": "Bottom Cta Label"
+    },
+    {
+        "type": "url",
+        "id": "bottom_cta_url",
+        "label": "Button Url"
+    },
+    {
+      "type": "header",
+      "content": "Section Spacing Desktop"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Top",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Bottom",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 48
+    },
+    {
+      "type": "header",
+      "content": "Section Spacing Mobile"
+    },
+    {
+      "type": "range",
+      "id": "margin_top_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Top",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Bottom",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_top_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 32
+    }
+  ],
+  "blocks": [
+    {
+      "type": "buttons",
+      "name": "Buttons",
+      "limit": 3,
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Button Label"
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "Button Url"
+        },
+        {
+          "type": "text",
+          "id": "template",
+          "label": "Template"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Form"
+    }
+  ]
+}
+{% endschema %}

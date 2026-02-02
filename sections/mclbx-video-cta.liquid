@@ -1,0 +1,455 @@
+<style>
+          .section-container--{{ section.id }}{
+            margin-top: {{ section.settings.margin_top | append:'px' }};
+            margin-bottom: {{ section.settings.margin_bottom | append:'px' }};
+            padding-top: {{ section.settings.padding_top | append:'px' }};
+            padding-bottom: {{ section.settings.padding_bottom | append:'px' }};
+            overflow: hidden;
+          }
+
+
+          @media screen and (max-width: 768px){
+            .section-container--{{ section.id }}{
+              {% comment %} display: none; {% endcomment %}
+              margin-top: {{ section.settings.margin_top_mobile | append:'px' }};
+              margin-bottom: {{ section.settings.margin_bottom_mobile | append:'px'  }};
+              padding-top: {{ section.settings.padding_top_mobile | append:'px' }};
+              padding-bottom: {{ section.settings.padding_bottom_mobile | append:'px' }};
+            }
+
+          }
+        .section-container--{{ section.id }} {
+            color: #fff;
+        .section-wrapper--{{ section.id }}{
+            position: relative;
+        }
+        .--elements {
+          position: relative;
+          border-radius: 12px;
+          overflow: hidden;
+      }
+        .--text-block {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, #000 37.49%, rgba(0, 0, 0, 0) 87.3%);
+            z-index: 1;
+            box-sizing: border-box;
+            padding: 50px;
+             @media(max-width: 768px){
+              padding: 30px;
+            background: linear-gradient(90deg, #0000009c 37.49%, rgba(0, 0, 0, 0) 100%);
+             }
+
+        }
+        .--text-block-contents {
+        max-width: 600px;
+        height: 100%;
+          justify-content: center;
+        display: flex;
+        flex-direction: column;
+         gap: 10px;
+
+    }
+        h4.--caption {
+          color: inherit;
+          display: flex;
+          gap: 10px;
+          align-items: center;
+          flex-wrap: wrap;
+          margin-block: 0px;
+      }
+      h2.--title {
+          color: inherit;
+          margin-block: 0px;
+          font-size: 58px;
+          line-height: 1.3;
+          @media(max-width: 768px){
+          font-size: 32px;
+          }
+      }
+      h3.--subheading {
+          color: inherit;
+          margin-block: 0px;
+           font-size: 48px;
+            line-height: 1.2;
+             @media(max-width: 768px){
+          font-size: 26px;
+          }
+      }
+      .--donation-wrapper {
+          display: flex;
+          gap: 10px;
+          flex-wrap: wrap;
+          font-size: 18px;
+          align-items: center;
+          color: #ccc;
+      }
+      .--donation-bar {
+        min-width: 120px;
+        max-width: 320px;
+        position: relative;
+        flex-grow: 1;
+        height: 12px;
+        background: #555;
+        border-radius: 6px;
+        overflow: hidden;
+    }
+    .--donation-bar::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: {{ section.settings.donation_progress | append: "%" }};
+        background: #f8b400;
+    }
+    .--donation-target {
+      color: #fff;
+        font-size: 12px;
+        line-height: 1.2;
+    }
+  .--video-container{
+          display: block;
+        width: 100%;
+        height: 500px;
+  }
+      video {
+        display: block;
+        width: 100%;
+        height: 100%;
+        max-height: 500px;
+        object-fit: cover;
+        object-position: center;
+    }
+    a.button {
+              font-family: var(--font-family-Body);
+          font-weight: 400;
+        background: #f8b400;
+        color: black;
+        font-size: 20px;
+        line-height: 1.5;
+          max-width: max-content;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+      a.button:hover {
+        color: #f8b400;
+        background-color: #fff;
+      }
+        }
+</style>
+
+<section class="section-container--{{ section.id }}" id="{{ section.settings.navid }}">
+  <div class="section-wrapper--{{ section.id }} page-width">
+    <div class="--elements">
+      <div class="--text-block">
+        <div class="--text-block-contents">
+          <h4 class="--caption">
+            {{ section.settings.caption }}
+            {% if section.settings.caption_image != blank %}
+              <a href="{{ section.settings.caption_image_url }}">
+                {{- section.settings.caption_image | image_url: width: 300 | image_tag -}}
+              </a>
+            {% endif %}
+          </h4>
+          {% if section.settings.title != blank %}
+            <h2 class="--title">{{ section.settings.title }}</h2>
+          {% endif %}
+          {% if section.settings.subheading != blank %}
+            <h3 class="--subheading">{{ section.settings.subheading }}</h3>
+          {% endif %}
+
+          <div class="--donation-wrapper">
+            <div class="--donation_title">{{ section.settings.donation_title }}</div>
+            <div class="--donation-bar">{{ section.settings.donation_progress }}</div>
+            <div class="--donation-target">{{ section.settings.donation_target }}</div>
+          </div>
+          {% if section.settings.button_label != blank %}
+            <a class="button" href="{{ section.settings.button_url }}" target="_blank">
+              {{ section.settings.button_label -}}
+            </a>
+          {% endif %}
+        </div>
+      </div>
+      <div class="--video-container">
+        {% if section.settings.preload_media == true %}
+          {{ section.settings.video | video_tag: preload: true, autoplay: true, width: 700, loop: true }}
+        {% else %}
+          <video
+            autoplay
+            loop
+            muted
+            playsinline
+            poster="{{ section.settings.video.preview_image | img_url: width: 'master' }}"
+          >
+            <source
+              data-src=""
+              data-videoelement='{{ section.settings.video | video_tag: autoplay: true, loop: true, muted: true, controls: true, width: section.settings.video.width }}'
+              type="video/mp4"
+            >
+            Your browser does not support the video tag.
+          </video>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+
+ // Function that loads all videos currently in viewport
+window.parseVideoHTML = (videoHTML) => {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(videoHTML, 'text/html');
+  const videoElement = doc.querySelector('video');
+  const sourceElement = videoElement?.querySelector('source');
+
+  return {
+    src: sourceElement?.getAttribute('src') ?? '',
+    type: sourceElement?.getAttribute('type') ?? 'video/mp4',
+    poster: videoElement?.getAttribute('poster') ?? '',
+    playsinline: videoElement?.hasAttribute('playsinline') ?? false,
+    preload: 'metadata',
+    autoplay: true
+  };
+};
+
+window.loadVisibleVideos = () => {
+  const videoSources = document.querySelectorAll('source[data-src]');
+
+  videoSources.forEach((source) => {
+    const videoData = window.parseVideoHTML(source.dataset.videoelement);
+    const video = source.closest('video');
+    console.log("Source", videoData.src)
+    if (videoData.src) {
+      source.setAttribute('src', videoData.src);
+      source.setAttribute('type', videoData.type);
+      video.setAttribute('poster', videoData.poster);
+      if (videoData.playsinline) video.setAttribute('playsinline', '');
+      video.setAttribute('preload', videoData.preload);
+      if (videoData.autoplay) video.setAttribute('autoplay', '');
+      source.removeAttribute('data-src');
+      video.load();
+    }
+  });
+};
+// lazy load video
+
+document.addEventListener('DOMContentLoaded', function() {
+  
+
+
+// window.loadVisibleVideos();
+
+  window.addEventListener('scroll', () => {
+    console.log("Scrolled Once");
+    
+  if (document.querySelectorAll('source[data-src]').length > 0) {
+      loadVisibleVideos();
+    }
+  }, { once: true });
+  
+  });
+
+
+
+
+
+
+</script>
+
+
+
+{% schema %}
+{
+  "name": "Video CTA",
+  "settings": [
+    {
+      "type": "text",
+      "id": "navid",
+      "label": "Id(for navigation)"
+    },
+    {
+      "type": "text",
+      "id": "caption",
+      "label": "Caption"
+    },
+    {
+      "type": "image_picker",
+      "id": "caption_image",
+      "label": "Caption Image"
+    },
+    {
+      "type": "url",
+      "id": "caption_image_url",
+      "label": "Caption Image Url"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading"
+    },
+    {
+      "type": "header",
+      "content": "Donation"
+    },
+    {
+      "type": "text",
+      "id": "donation_title",
+      "label": "Donation Title"
+    },
+    {
+      "type": "text",
+      "id": "donation_target",
+      "label": "Donation Target"
+    },
+    {
+      "type": "range",
+      "id": "donation_progress",
+      "label": "Donation Progress",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 10
+    },
+
+    {
+      "type": "header",
+      "content": "Media"
+    },
+    {
+      "type": "checkbox",
+      "id": "preload_media",
+      "label": "Preload Media",
+      "default": false
+    },
+    {
+      "type": "video",
+      "id": "video",
+      "label": "Video"
+    },
+
+    {
+      "type": "header",
+      "content": "CTA Button"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button Label"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "Button Url"
+    },
+    {
+      "type": "header",
+      "content": "Desktop Spacing"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "label": "Margin Top",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "label": "Margin Bottom",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 50
+    },
+    {
+      "type": "header",
+      "content": "Mobile Spacing"
+    },
+    {
+      "type": "range",
+      "id": "margin_top_mobile",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "label": "Margin Top (Mobile)",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_mobile",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "label": "Margin Bottom (Mobile)",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "label": "Padding Top  (Mobile)",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "label": "Padding Bottom  (Mobile)",
+      "default": 20
+    }
+  ],
+
+  "presets": [
+    {
+      "name": "Video CTA"
+    }
+  ]
+}
+{% endschema %}

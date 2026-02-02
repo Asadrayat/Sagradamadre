@@ -1,0 +1,598 @@
+{% liquid
+  assign id = section.id
+%}
+
+<style>
+  #shopify-section-{{id}} {
+    box-sizing: border-box;
+    margin-top: {{section.settings.margin_top | append: 'px'}};
+    margin-bottom: {{section.settings.margin_bottom | append: 'px'}};
+    padding-top: {{section.settings.padding_top | append: 'px'}};
+    padding-bottom: {{section.settings.padding_bottom | append: 'px'}};
+    max-width: 100vw;
+    overflow:hidden;
+    background-color: {{ section.settings.bg_color }};
+    {%if request.path == '/pages/about-us' or request.path == '/' or request.path == '/pages/join-the-family' or request.path contains 'landing'  %}
+      display: none;
+  {% endif %}
+  }
+
+  @media(max-width: 768px) {
+    #shopify-section-{{id}} {
+      margin-top: {{section.settings.margin_top_m | append: 'px'}};
+      margin-bottom: {{section.settings.margin_bottom_m | append: 'px'}};
+      padding-top: {{section.settings.padding_top_m | append: 'px'}};
+      padding-bottom: {{section.settings.padding_bottom_m | append: 'px'}};
+    }
+  }
+  .sec-{{ id }} .sec--title{
+    color: #000;
+    margin: 0 0 var(--Spacing-Container-xxl, 48px);
+    font-family: var(--font-family-Heading, "Sainte Colombe");
+    font-size: var(--Font-Size-Heading-H2, 40px);
+    font-style: normal;
+    font-weight: 700;
+    line-height: var(--Line-Height-Heading-H2, 40px); /* 100% */
+    text-transform: uppercase;
+  }
+  .wrapper-{{ id }} {
+    display: grid;
+    grid-template-columns: repeat({{section.blocks.size}}, 1fr);
+    grid-gap: var(--Spacing-Container-xxl, 40px);
+    @media(max-width: 768px) {
+      grid-template-columns: 1fr;
+      {% comment %} grid-gap: 24px; {% endcomment %}
+      box-sizing: border-box;
+    }
+
+    .img-wrapper{
+      position: relative;
+      overflow: hidden;
+      background: #FFF;
+      box-shadow: 0 4px 1.4px 0 rgba(0, 0, 0, 0.25);
+      line-height: 0;
+        border: 12px solid #723342;
+      height: max-content;
+      @media(max-width: 768px) {
+        grid-row: {{ section.settings.image_position_mobile }};
+        grid-columns: 1/2;
+      }
+      img{
+        width: 100%;
+        height: auto;
+        {% if section.settings.imagesize == "potrait" %}
+        aspect-ratio: 4/5;
+        {% elsif section.settings.imagesize == "original" %}
+          aspect-ratio: unset;
+        {% else %}
+          aspect-ratio: 1;
+        {% endif %}
+        transition: all 0.4s ease-in-out;
+        object-fit: cover;
+      }
+      svg{
+        width: 100%;
+        height: auto;
+        aspect-ratio: 4/5;
+        background: rgba(0,0,0,10%);
+      }
+    }
+    .img-wrapper:hover img {
+      scale: 1.05;
+    }
+    .hide_image_border.img-wrapper {
+      background: transparent;
+      box-shadow: unset;
+      border: none;
+    }
+    .hide_image_border.img-wrapper:hover img {
+      scale: 1;
+    }
+    .text-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+
+      .sub-title{
+        margin: 0 0 var(--Spacing-Container-md) 0;
+        margin-bottom: 16px;
+        font-size: 1.6rem;
+        line-height: 1;
+        font-weight: 500;
+        text-transform: capitalize;
+        color: #723342;
+      }
+      .title{
+        color: #000;
+        font-family: var(--font-family-Heading, Gotham);
+        font-style: normal;
+        font-weight: 700;
+        line-height: 115%;
+        text-transform: uppercase;
+        margin: 0 0 var(--Spacing-Container-md) 0;
+        text-align: left;
+        @media(max-width: 768px) {
+            font-size: 20px;
+            line-height: 140%;
+        }
+      }
+      .text{
+        color: #000;
+        font-family: var(--font-family-Body, "Sainte Colombe");
+        font-size: var(--Font-Size-Paragraph-Regular, 16px);
+        font-style: normal;
+        font-weight: 400;
+        line-height: var(--Line-Height-Paragraph-Regular, 24px); /* 150% */
+        margin: 0;
+        {% if template.name == 'product' %}
+          margin: var(--Spacing-Container-md) 0 0 0;
+        {% endif %}
+        /* margin: var(--Spacing-Container-md) 0 0 0; */
+        text-align: left;
+        @media(min-width: 768px) {
+          max-width: 80%;
+        }
+        {% if template.suffix == 'size-chart' %}
+          strong{
+            margin-right: 16px;
+          }
+        {% endif %}
+      }
+      .text em {
+        display: block;
+        font-style: normal;
+        @media(max-width: 768px) {
+          display: unset;
+        }
+      }
+      .text *{
+        text-align: left;
+        {% if template.suffix == 'size-chart' %}
+          margin-bottom: 32px;
+        {% endif %}
+      }
+      .text p:first-child{
+        margin-top: 0;
+      }
+      .text p:last-child{
+        margin-bottom: 0;
+      }
+      .buttonX{
+        color: #000;
+        /* text-align: center; */
+        font-family: var(--font-family-Control, "Archivo Expanded");
+        font-size: 13px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 13px; /* 100% */
+        text-decoration-line: underline;
+        text-decoration-style: solid;
+        text-decoration-skip-ink: none;
+        text-decoration-thickness: auto;
+        text-underline-offset: auto;
+        text-underline-position: from-font;
+        text-transform: uppercase;
+      }
+      .buttonX_.button {
+        margin-top: 24px;
+      }
+
+      @media(max-width: 768px) {
+        .sub-title{
+          margin: 0;
+        }
+        .title{
+
+          margin-bottom: 0px;
+        }
+        .text{
+          font-size: var(--Font-Size-Paragraph-Large, 15px);
+          {% comment %} font-size: 12px;
+          line-height: 16px; {% endcomment %}
+          margin: var(--Spacing-Container-sm) 0 0 0;
+        }
+        .buttonX_.button{
+          /* width: 100%; */
+          /* font-size: 20px; */
+          /* padding: 10px 0px; */
+          margin-top: 16px;
+        }
+      }
+    }
+  }
+
+  @media screen and (min-width: 769px){
+    {% if section.settings.content__style == 'media' %}
+      .sec-{{ id }} .img-wrapper{
+        order: 1;
+      }
+      .sec-{{ id }} .text-wrapper{
+        order: 2;
+      }
+    {% elsif section.settings.content__style == 'texts' %}
+      .sec-{{ id }} .img-wrapper{
+        order: 2;
+      }
+      .sec-{{ id }} .text-wrapper{
+        order: 1;
+      }
+    {% endif %}
+  }
+
+  @media screen and (max-width: 768px){
+    .text-wrapper{
+      /* padding: 16px; */
+    }
+    .img-wrapper {
+        grid-column: 1/2;
+        grid-row: 1/2;
+    }
+  }
+</style>
+
+<div
+  class="sec-{{ id }} "
+>
+  <div class="{% unless section.settings.full_width %}page-width{% endunless %}">
+    {% if section.settings.sec__title %}
+      <p class="sec--title">{{ section.settings.sec__title }}</p>
+    {% endif %}
+    <div class="wrapper-{{ id }}">
+      {% for block in section.blocks %}
+        {% case block.type %}
+          {% when 'image' %}
+            <div
+              class="img-wrapper {% if section.settings.hide_image_border %}hide_image_border{% endif %} %}"
+            >
+              {% if request.path contains 'womens' or request.path contains 'ladies' %}
+                {% assign selected_image = block.settings.image_desktop_women %}
+
+              {% elsif request.path contains 'sport'
+                or request.path contains 'performance'
+                or request.path contains 'cool'
+              %}
+                {% assign selected_image = block.settings.image_desktop_sport %}
+              {% else %}
+                {% assign selected_image = block.settings.image_desktop %}
+              {% endif %}
+
+              {% unless selected_image == blank %}
+                {{ selected_image | image_url: width: 1000 | image_tag: loading: 'lazy', alt: shop.name }}
+
+              {% else %}
+                {{ 'image' | placeholder_svg_tag }}
+              {% endunless %}
+            </div>
+          {% when 'text' %}
+            {% if request.path contains 'womens' or request.path contains 'ladies' %}
+              {% assign selected_text_content = block.settings.text_women %}
+
+            {% elsif request.path contains 'sport'
+              or request.path contains 'performance'
+              or request.path contains 'cool'
+            %}
+              {% assign selected_text_content = block.settings.text_sports %}
+            {% else %}
+              {% assign selected_text_content = block.settings.text_general %}
+            {% endif %}
+
+            <div class="text-wrapper" style="justify-content: {{ block.settings.alignment }}">
+              {% unless block.settings.sub_title == blank %}
+                <h2 class="sub-title">{{ block.settings.sub_title }}</h2>
+              {% endunless %}
+              {% unless block.settings.title == blank %}
+                <h2 class="title">{{ block.settings.title }}</h2>
+              {% endunless %}
+              {% unless selected_text_content == blank %}
+                <div class="text rethink-sans">{{ selected_text_content }}</div>
+              {% endunless %}
+              <div class="btn__wrapper">
+                {% unless block.settings.button_text == blank %}
+                  <a class="buttonX_ button" href="{{ block.settings.button_url }}">{{ block.settings.button_text }}</a>
+                {% endunless %}
+                {% unless block.settings.button_text1 == blank %}
+                  <a class="buttonX_ button" href="{{ block.settings.button_url1 }}">
+                    {{- block.settings.button_text1 -}}
+                  </a>
+                {% endunless %}
+              </div>
+            </div>
+        {% endcase %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Custom Media text",
+  "class": "lazyload",
+  "settings": [
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color"
+    },
+    {
+      "type": "text",
+      "id": "sec__title",
+      "label": "Title"
+    },
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "label": "Full Width Section",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "imagesize",
+      "label": "Image Type",
+      "default": "potrait",
+      "options": [
+        {
+          "label": "Potrait",
+          "value": "potrait"
+        },
+        {
+          "label": "Original",
+          "value": "original"
+        },
+        {
+          "label": "Square",
+          "value": "square"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "content__style",
+      "label": "Content Style",
+      "options": [
+        {
+          "value": "media",
+          "label": "Media"
+        },
+        {
+          "value": "texts",
+          "label": "Texts"
+        }
+      ],
+      "default": "media"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_image_border",
+      "label": "Hide Image Border",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Section Spacing Desktop"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Top",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Bottom",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Section Spacing Mobile"
+    },
+    {
+      "type": "range",
+      "id": "margin_top_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Top",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Bottom",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_top_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 0
+    }
+  ],
+  "max_blocks": 2,
+  "blocks": [
+    {
+      "type": "image",
+      "name": "Image",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image_desktop",
+          "label": "Desktop Image General"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_desktop_women",
+          "label": "Desktop Image Women"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_desktop_sport",
+          "label": "Desktop Image Sport"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "name": "Text",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "select",
+          "id": "alignment",
+          "label": "Vertical alignment",
+          "options": [
+            {
+              "value": "top",
+              "label": "Top"
+            },
+            {
+              "value": "center",
+              "label": "Middle"
+            },
+            {
+              "value": "end",
+              "label": "Bottom"
+            }
+          ],
+          "default": "center"
+        },
+        {
+          "type": "textarea",
+          "id": "sub_title",
+          "label": "Sub Title",
+          "default": "Sub Title"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Title"
+        },
+        {
+          "type": "richtext",
+          "id": "text_general",
+          "label": "Text(General)",
+          "default": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>"
+        },
+        {
+          "type": "richtext",
+          "id": "text_women",
+          "label": "Text(Women)",
+          "default": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>"
+        },
+        {
+          "type": "richtext",
+          "id": "text_sports",
+          "label": "Text(Sports)",
+          "default": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>"
+        },
+        {
+          "type": "header",
+          "content": "Button 1"
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Button Text"
+        },
+        {
+          "type": "url",
+          "id": "button_url",
+          "label": "Button URL"
+        },
+        {
+          "type": "header",
+          "content": "Button 2"
+        },
+        {
+          "type": "text",
+          "id": "button_text1",
+          "label": "Button Text"
+        },
+        {
+          "type": "url",
+          "id": "button_url1",
+          "label": "Button URL"
+        },
+        {
+          "type": "color_background",
+          "id": "background_color",
+          "label": "Background Color",
+          "default": "#FFFFFF"
+        },
+        {
+          "type": "color",
+          "id": "title_color",
+          "label": "Title Color",
+          "default": "#212121"
+        },
+        {
+          "type": "color",
+          "id": "title_span_color",
+          "label": "Title Span Color",
+          "default": "#E60000"
+        },
+        {
+          "type": "color",
+          "id": "text_color",
+          "label": "Text Color",
+          "default": "#212121"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Media text"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,213 @@
+{% liquid
+  assign id = section.id
+%}
+
+<style>
+  #shopify-section-{{id}} {
+    box-sizing: border-box;
+    margin-top: {{section.settings.margin_top | append: 'px'}};
+    margin-bottom: {{section.settings.margin_bottom | append: 'px'}};
+    padding-top: {{section.settings.padding_top | append: 'px'}};
+    padding-bottom: {{section.settings.padding_bottom | append: 'px'}};
+    span.svg__wrapper__link.not_hidden svg{
+      width: 24px;
+      height: 24px;
+    }
+  }
+  .wrapper-{{ id }} {
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+    gap: 15px;
+    align-items: start;
+    @media(max-width: 900px) {
+       grid-template-columns: 1fr ;
+    }
+  }
+  .heading--{{ id }} {
+    display: flex;
+    align-items: center;
+  }
+  .heading--{{ id }} {
+    margin: 0 0 10px;
+  }
+  @media(max-width: 600px) {
+    #shopify-section-{{id}} {
+      margin-top: {{section.settings.margin_top_m | append: 'px'}};
+      margin-bottom: {{section.settings.margin_bottom_m | append: 'px'}};
+      padding-top: {{section.settings.padding_top_m | append: 'px'}};
+      padding-bottom: {{section.settings.padding_bottom_m | append: 'px'}};
+    }
+  }
+</style>
+
+{{ 'main-collection-custom.css' | asset_url | stylesheet_tag }}
+{% if collection.handle == 'sale' %}
+{% unless customer %}
+  <div style="text-align: center; padding: 120px 20px; min-height: 60vh; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+    <h1 class="" style="margin-bottom: 20px;">Exclusive Collection</h1>
+    <p style="font-size: 16px; max-width: 600px; margin-bottom: 30px;">
+      This collection is only available to logged-in customers. 
+      Please sign in or create an account to view it.
+    </p>
+    <a href='{{ routes.account_login_url }}' class="button" style="padding: 12px 30px; font-size: 1.1em;">
+      Log in
+    </a>
+  </div>    
+{% endunless %}
+{% endif %}
+<div class="sec-{{ id }} {% if collection.handle == 'sale' and customer.has_account == nil %}hidden{% endif %}" >
+  <div class="{% unless section.settings.full_width %}page-width{% endunless %}">
+    <div class="wrapper-{{ id }}">
+      <div class="collection_list_deshboard__wrap__">
+        <h3 class="heading_">{{ section.settings.heading }}</h3>
+        <div class="collection_list__wrap__">
+          {% for col in collections %}
+            <a href="{{ col.url }}">{{ col.title }}</a>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="collection__wrap__">
+        <div class="heading--{{ id }}">
+          <span class="svg__wrapper__link {% if customer.has_account and collection.handle == 'sale'%}not_{% endif %}hidden">
+            {% render 'all-icons', name: 'heart' %}
+          </span>
+          <h2 class="col__title">{{ collection.title }}</h2>
+        </div>
+        <div class="main__product_grid">
+          {% for product in collection.products %}
+            {% render 'product-card-v1', product: product %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Custom Main Collection",
+  "enabled_on": {
+    "templates": ["collection"]
+  },
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "label": "Full Width Section",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Categories"
+    },
+    {
+      "type": "header",
+      "content": "Section Spacing Desktop"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Top",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Bottom",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 48
+    },
+    {
+      "type": "header",
+      "content": "Section Spacing Mobile"
+    },
+    {
+      "type": "range",
+      "id": "margin_top_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Top",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Bottom",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_top_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 32
+    }
+  ],
+  "blocks": [
+    {
+      "type": "image",
+      "name": "Image",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Main Collection"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,34 @@
+{% comment %}
+  Helper snippet: Display formatted address fields
+  Usage: {% render 'address-details', address: some_address %}
+{% endcomment %}
+{% comment %} 
+  You can put this in a separate snippet file: snippets/address-details.liquid
+  Or inline it if preferred.
+{% endcomment %}
+{% layout none %}
+<div class="address-details">
+  {% comment %} {% if address.name != blank %}
+    <strong>{{ address.name }}</strong><br>
+  {% endif %} {% endcomment %}
+  
+  {% if address.company != blank %}
+    {{ address.company }}<br>
+  {% endif %}
+  
+  {{ address.address1 }}<br>
+  {% if address.address2 != blank %}
+    {{ address.address2 }}<br>
+  {% endif %}
+  
+  {{ address.city }}{% if address.province != blank %}, {{ address.province }}{% endif %} 
+  {{ address.zip }}<br>
+  
+  {{ address.country }}<br>
+  
+  {% if address.phone != blank %}
+    Phone: {{ address.phone }}<br>
+  {% endif %}
+</div>
+
+{% layout default %}

@@ -1,0 +1,119 @@
+<style>
+  .block__wrapper-{{ section.id }}-{{ block.id }} .btn__wrapper a {
+    color: {{ block.settings.btn_color }};
+    background-color : {{ block.settings.btn_bgcolor }};    
+  }
+  .block__wrapper-{{ section.id }}-{{ block.id }} .btn__wrapper a:hover {
+    background-color: #cc1f28;
+  }
+  .block__wrapper-{{ section.id }} .image-wrap {
+    filter: brightness({{ block.settings.image_overlay_opacity | append:'%' }});
+  }
+  .block__wrapper-{{ section.id }}-{{ block.id }} .info-{{ block.id }} {
+    color: {{ block.settings.color__info }};
+    @media(max-width: 768px) {
+      color: {{ block.settings.color__info_m }};
+    }
+  }
+  .block__wrapper-{{ section.id }}-{{ block.id }} .image-wrap {
+    filter: brightness({{ block.settings.image_overlay_opacity | append:'%' }});
+  }
+  .block__wrapper-{{ section.id }}-{{ block.id }}.block__wrapper .content.middle_left {
+    justify-content: center;
+    align-items: start;
+  }
+  .block__wrapper-{{ section.id }}-{{ block.id }}.block__wrapper .content.middle_center {
+    justify-content: center;
+    align-items: center;
+  }
+  .block__wrapper-{{ section.id }}-{{ block.id }}.block__wrapper .content.middle_right {
+    justify-content: center;
+    align-items: end;
+  }
+  .block__wrapper-{{ section.id }}-{{ block.id }}.block__wrapper .content.top_left {
+    justify-content: start;
+    align-items: start;
+  }
+  .block__wrapper-{{ section.id }}-{{ block.id }}.block__wrapper .content.top_center {
+    justify-content: start;
+    align-items: center;
+  }
+  .block__wrapper-{{ section.id }}-{{ block.id }}.block__wrapper .content.top_right {
+    justify-content: start;
+    align-items: end;
+  }
+  .block__wrapper-{{ section.id }}-{{ block.id }}.block__wrapper .content.bottom_left {
+    justify-content: end;
+    align-items: start;
+  }
+  .block__wrapper-{{ section.id }}-{{ block.id }}.block__wrapper .content.bottom_center {
+    justify-content: end;
+    align-items: center;
+  }
+  .block__wrapper-{{ section.id }}-{{ block.id }}.block__wrapper .content.bottom_right {
+    justify-content: end;
+    align-items: end;
+  }
+  .slideshow__section_wrap {
+    overflow: hidden;
+  }
+  @media(min-width: 601px) {
+    .block__wrapper-{{ section.id }}-{{ block.id }}.block__wrapper .content.top_space_between {
+      justify-content: space-between;
+      align-items: start;
+      flex-direction: row;
+    }
+
+    .block__wrapper-{{ section.id }}-{{ block.id }}.block__wrapper .content.middle_space_between {
+      justify-content: space-between;
+      align-items: center;
+      flex-direction: row;
+    }
+    .block__wrapper-{{ section.id }}-{{ block.id }}.block__wrapper .content.bottom_space_between {
+      justify-content: space-between;
+      align-items: end;
+      flex-direction: row;
+    }
+  }
+    .slideshow__section_wrap {
+      overflow: hidden;
+    }
+  @media(max-width: 600px) {
+    .block__wrapper-{{ section.id }}-{{ block.id }}.block__wrapper .content.mobile-middle_left {
+      justify-content: center;
+      align-items: start;
+    }
+    .block__wrapper-{{ section.id }}-{{ block.id }}.block__wrapper .content.mobile-middle_center {
+      justify-content: center;
+      align-items: center;
+    }
+    .block__wrapper-{{ section.id }}-{{ block.id }}.block__wrapper .content.mobile-middle_right {
+      justify-content: center;
+      align-items: end;
+    }
+    .block__wrapper-{{ section.id }}-{{ block.id }}.block__wrapper .content.mobile-top_left {
+      justify-content: start;
+      align-items: start;
+    }
+    .block__wrapper-{{ section.id }}-{{ block.id }}.block__wrapper .content.mobile-top_center {
+      justify-content: start;
+      align-items: center;
+    }
+    .block__wrapper-{{ section.id }}-{{ block.id }}.block__wrapper .content.mobile-top_right {
+      justify-content: start;
+      align-items: end;
+    }
+    .block__wrapper-{{ section.id }}-{{ block.id }}.block__wrapper .content.mobile-bottom_left {
+      justify-content: end;
+      align-items: start;
+    }
+    .block__wrapper-{{ section.id }}-{{ block.id }}.block__wrapper .content.mobile-bottom_center {
+      justify-content: end;
+      align-items: center;
+    }
+    .block__wrapper-{{ section.id }}-{{ block.id }}.block__wrapper .content.mobile-bottom_right {
+      justify-content: end;
+      align-items: end;
+    }
+  }
+</style>

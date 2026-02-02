@@ -1,0 +1,515 @@
+{% liquid
+  assign id = section.id
+%}
+
+<style>
+  #shopify-section-{{id}} {
+    box-sizing: border-box;
+    margin-top: {{section.settings.margin_top | append: 'px'}};
+    margin-bottom: {{section.settings.margin_bottom | append: 'px'}};
+    padding-top: {{section.settings.padding_top | append: 'px'}};
+    padding-bottom: {{section.settings.padding_bottom | append: 'px'}};
+  }
+
+  @media(max-width: 600px) {
+    #shopify-section-{{id}} {
+      margin-top: {{section.settings.margin_top_m | append: 'px'}};
+      margin-bottom: {{section.settings.margin_bottom_m | append: 'px'}};
+      padding-top: {{section.settings.padding_top_m | append: 'px'}};
+      padding-bottom: {{section.settings.padding_bottom_m | append: 'px'}};
+    }
+  }
+  #shopify-section-{{id}} {
+    .wrapper-{{ id }}{
+      display: grid;
+      grid-template-columns: repeat(2,minmax(0,1fr));
+      @media(max-width: 768px){
+        grid-template-columns: minmax(0,1fr);
+        gap: var(--Spacing-Container-md, 24px);
+      }
+    }
+    .content-wrapper{
+      padding-right: var(--Spacing-Container-xxl, 80px);
+
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--Spacing-Container-xl, 32px);
+      flex: 1 0 0;
+
+      @media(max-width: 768px){
+        padding-right: unset;
+      }
+    }
+    .text-wrapper{
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--Spacing-Container-xs, 12px);
+      align-self: stretch;
+    }
+    .title{
+      margin: 0;
+      color: #000;
+      font-family: var(--font-family-Title, Gotham);
+      font-style: normal;
+      letter-spacing: 0.46px;
+      text-transform: uppercase;
+    }
+    .description{
+      margin: 0;
+      color: var(--Content-Base-base, #4B5563);
+
+      /* Paragraph/Large */
+      font-family: var(--font-family-Body, Gotham);
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: var(--Line-Height-Paragraph-Large, 28px); /* 175% */
+    }
+    .phone-container{
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      align-self: stretch;
+    }
+    .phone-wrapper{
+
+    }
+    .phone-text {
+      color: var(--Text-primary, #000);
+      margin: 0;
+      /* font-family: var(--font-family-Title, "Neue Plak"); */
+      font-size: var(--Font-Size-Heading-H5, 24px);
+      font-style: normal;
+      font-weight: 400;
+      line-height: var(--Line-Height-Heading-H5, 28px); /* 116.667% */
+    }
+    .phone-number, .phone-number a{
+      margin: 0;
+      color: #000;
+      text-align: center;
+      font-family: var(--font-family-Body, Gotham);
+      font-size: var(--Font-Size-Paragraph-Large, 16px);
+      font-style: normal;
+      font-weight: 400;
+      line-height: var(--Line-Height-Paragraph-Large, 28px); /* 175% */
+    }
+
+    /* Contact Form */
+    .contact-form-wrapper {
+        border-radius: var(--rounded-2xl, 16px);
+        border: 1px solid #ffffff;
+        padding: 40px;
+        box-shadow: 0px 4px 10px #ffffff;
+        background: #72334221;
+        overflow: hidden;
+        @media(max-width: 768px) {
+            padding: 20px;
+        }
+    }
+
+    .form-status--message{
+      color: var(--Text-primary, #000);
+      /* font-family: var(--font-family-Title, "Neue Plak"); */
+      font-size: var(--Font-Size-Heading-H4);
+      font-style: normal;
+      font-weight: 400;
+      line-height: var(--Line-Height-Heading-H4); /* 100% */
+      letter-spacing: -0.4px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 15px;
+    }
+
+    .field__label {
+      font-weight: 600;
+      margin-bottom: 5px;
+      font-family: var(--font-body-family);
+      font-size: 16px;
+      color: #333;
+      display: block; /* Ensures label is visible */
+    }
+
+    .field__input {
+      padding: 10px;
+      font-size: 14px;
+      transition: border-color 0.3s ease-in-out;
+      border-radius: 5px;
+      border: 1px solid var(--Border-Base-main, #D1D5DB);
+      background: var(--Background-base, #FFF);
+      font-family: var(--font-body-family);
+      font-size: 16px;
+    }
+
+    .field__input:focus {
+      border-color: #333;
+      outline: none;
+    }
+
+    .text-area {
+      min-height: 100px;
+    }
+
+    .contact__button {
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .button {
+      width: 100%;
+      cursor: pointer;
+      border-radius: 5px;
+      {% comment %} border-radius: 0;
+      /* background: #000; */
+      background: #212B36;
+      padding: var(--Spacing-Container-xs, 12px) var(--Spacing-Container-lg, 40px);
+      color: #FFF;
+      text-align: center;
+      /* font-family: var(--font-family-Body, "Neue Plak"); */
+      font-size: var(--Font-Size-UI-Controls-Control-Button-Small, 20px);
+      font-style: normal;
+      font-weight: 400;
+      line-height: var(--Line-Height-UI-Controls-Control-Button-Small, 20px); /* 100% */
+      text-transform: uppercase;
+      text-decoration: none;
+      display: block; {% endcomment %}
+    }
+    .field:before {
+      content: unset;
+    }
+    .field:after {
+      content: unset;
+    }
+    .field__label{
+      position: static;
+      color: #000;
+      /* font-family: var(--font-family-Body, "Neue Plak"); */
+      font-size: var(--Font-Size-Paragraph-Regular, 16px);
+      font-style: normal;
+      font-weight: 400;
+      line-height: var(--Line-Height-Paragraph-Regular, 24px); /* 150% */
+      @media(max-width: 768px){
+
+      }
+    }
+    .field__input {
+        margin: 0 0 4px 0;
+        /* border-bottom: 1px solid #00000054; */
+        @media(max-width: 768px){
+          /* padding: 0;          */
+        }
+    }
+    .field__input:focus{
+      margin: 0 0 4px 0;
+      box-shadow: unset;
+    }
+    .field__input::placeholder {
+      opacity: 1;
+      color: var(--Color-Neutral-neutral, #666);
+      font-family: var(--font-family-Body, "Neue Plak");
+      font-size: var(--Font-Size-Paragraph-Small, 16px);
+      font-style: normal;
+      font-weight: 400;
+      line-height: var(--Line-Height-Paragraph-Small, 24px); /* 150% */
+    }
+
+
+.phone-wrapper {
+    display: flex;
+    align-items: center;
+    gap: var(--Spacing-Container-sm, 12px);
+    align-self: stretch;
+}
+.phone--container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--Spacing-Container-lg, 24px);
+    align-self: stretch;
+}
+  }
+</style>
+
+<div class="sec-{{ id }} belongsToNav" id={{ section.settings.sec_id | downcase }}>
+  <div class="{% unless section.settings.full_width %}page-width{% endunless %}">
+    <div class="wrapper-{{ id }}">
+      <div class="content-wrapper">
+        <div class="text-wrapper">
+          <h2 class="title">{{ section.settings.title }}</h2>
+          <p class="description">{{ section.settings.des }}</p>
+        </div>
+        <div class="phone--container">
+
+        <div class="phone-wrapper">
+          <div class="icon-wrapper">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="20" viewBox="0 0 18 20" fill="none">
+              <path d="M8.99953 19.5C13.7405 19.5 17.5948 15.6457 17.5948 10.9048C17.5948 6.31762 13.9802 2.5719 9.45192 2.33214V1.40476H10.8091C11.0579 1.40476 11.2614 1.20119 11.2614 0.952381C11.2614 0.703571 11.0579 0.5 10.8091 0.5H8.99953H7.19001C6.9412 0.5 6.73763 0.703571 6.73763 0.952381C6.73763 1.20119 6.9412 1.40476 7.19001 1.40476H8.54715V2.33214C4.01882 2.5719 0.404297 6.31762 0.404297 10.9048C0.404297 15.6457 4.25858 19.5 8.99953 19.5ZM8.99953 3.21429C13.2383 3.21429 16.69 6.66595 16.69 10.9048C16.69 15.1436 13.2383 18.5952 8.99953 18.5952C4.76073 18.5952 1.30906 15.1436 1.30906 10.9048C1.30906 6.66595 4.76073 3.21429 8.99953 3.21429Z" fill="black"/>
+              <path d="M9.00056 17.6904C12.7417 17.6904 15.7863 14.6459 15.7863 10.9047C15.7863 7.16354 12.7417 4.11902 9.00056 4.11902C5.25937 4.11902 2.21484 7.16354 2.21484 10.9047C2.21484 14.6459 5.25937 17.6904 9.00056 17.6904ZM9.00056 5.02378C12.2441 5.02378 14.8815 7.66116 14.8815 10.9047C14.8815 14.1483 12.2441 16.7857 9.00056 16.7857C5.75699 16.7857 3.11961 14.1483 3.11961 10.9047C3.11961 7.66116 5.75699 5.02378 9.00056 5.02378Z" fill="black"/>
+              <path d="M8.56534 15.5598C8.62415 15.7498 8.80058 15.881 8.99963 15.881C9.19868 15.881 9.3751 15.7498 9.43391 15.5598L10.4065 12.3117L13.6546 11.3391C13.8446 11.2803 13.9758 11.1038 13.9758 10.9048C13.9758 10.7057 13.8446 10.5293 13.6546 10.4705L10.4065 9.49787L9.43391 6.24978C9.3751 6.05978 9.19868 5.92859 8.99963 5.92859C8.80058 5.92859 8.62415 6.05978 8.56534 6.24978L7.59272 9.49787L4.34463 10.4705C4.15463 10.5293 4.02344 10.7057 4.02344 10.9048C4.02344 11.1038 4.15463 11.2803 4.34463 11.3391L7.59272 12.3117L8.56534 15.5598ZM8.08582 10.2941C8.23058 10.2488 8.34368 10.1357 8.38891 9.99097L8.99963 7.95526L9.61034 9.99097C9.65558 10.1357 9.76868 10.2488 9.91344 10.2941L11.9492 10.9048L9.91344 11.5155C9.76868 11.5607 9.65558 11.6738 9.61034 11.8186L8.99963 13.8543L8.38891 11.8186C8.34368 11.6738 8.23058 11.5607 8.08582 11.5155L6.0501 10.9048L8.08582 10.2941Z" fill="black"/>
+              <path d="M9.00047 11.8095C9.50015 11.8095 9.90523 11.4044 9.90523 10.9048C9.90523 10.4051 9.50015 10 9.00047 10C8.50078 10 8.0957 10.4051 8.0957 10.9048C8.0957 11.4044 8.50078 11.8095 9.00047 11.8095Z" fill="black"/>
+            </svg>
+          </div>
+            <p class="phone-number">{{ section.settings.address }}</p>
+        </div>
+
+        <div class="phone-wrapper">
+          <div class="icon-wrapper">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="20" viewBox="0 0 18 20" fill="none">
+              <path d="M5.39989 7.50562C5.29114 5.97643 5.65441 4.45071 6.44061 3.1346L2.63777 1.08691C1.48915 3.00283 0.92228 5.21135 1.00618 7.44362C1.09008 9.67589 1.82112 11.8356 3.11031 13.6599C4.44971 15.5232 6.27104 16.9867 8.37898 17.8935C10.4869 18.8003 12.8019 19.1162 15.0758 18.8073L14.5132 14.6556C12.9421 14.8558 11.3464 14.6061 9.91155 13.9356L9.1071 15.5163C7.55226 14.8044 6.21461 13.6919 5.23113 12.2929C4.26037 10.9202 3.68622 9.30676 3.5716 7.62938L5.39989 7.50562Z" stroke="black" stroke-width="1.1251" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M11.0547 1.75073C13.1065 2.30205 14.8561 3.64427 15.9201 5.48327C16.984 7.32227 17.2756 9.50804 16.7308 11.5616" stroke="black" stroke-width="1.1251" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M10.4746 3.92224C11.9499 4.32044 13.2073 5.28689 13.9717 6.61006C14.7361 7.93322 14.9451 9.50532 14.5531 10.9823" stroke="black" stroke-width="1.1251" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M9.88867 6.09924C10.3346 6.21744 10.7528 6.4225 11.1192 6.70267C11.4857 6.98284 11.7933 7.33261 12.0243 7.73191C12.2553 8.13121 12.4052 8.57218 12.4654 9.02954C12.5256 9.48691 12.4949 9.95165 12.3751 10.3971" stroke="black" stroke-width="1.1251" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+            <p class="phone-number">{{ section.settings.phone }}</p>
+        </div>
+
+        <div class="phone-wrapper">
+          <div class="icon-wrapper">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <path d="M6.18751 15.8904C5.99346 15.8904 5.83594 16.0479 5.83594 16.242C5.83594 16.4361 5.99346 16.5935 6.18751 16.5935C6.38156 16.5935 6.53908 16.4361 6.53908 16.242C6.53908 16.0479 6.38156 15.8904 6.18751 15.8904Z" fill="black"/>
+              <path d="M17.556 5.47956C17.5544 5.47832 17.5526 5.47723 17.5509 5.47599L14.6253 3.47066V2.46045C14.6253 2.26639 14.468 2.10887 14.2738 2.10887H12.5845L10.0162 0.323004C9.4085 -0.107533 8.59193 -0.107533 7.9867 0.321219L5.41557 2.10887H3.72665C3.53246 2.10887 3.37508 2.26639 3.37508 2.46045V3.47066L0.449489 5.47599C0.447841 5.47709 0.446056 5.47832 0.444408 5.47956C0.161503 5.68089 0 6.00719 0 6.33967V16.9452C0 17.5158 0.461437 17.9999 1.05471 17.9999H16.9457C17.5394 17.9999 18.0004 17.5154 18.0004 16.9452V6.33967C18.0004 5.99332 17.8275 5.67279 17.556 5.47956ZM17.2973 16.9037L11.4331 11.985L17.2973 6.74796V16.9037ZM0.703142 6.74796L6.56737 11.985L0.703142 16.9037V6.74796ZM7.09734 12.4582L7.8127 13.0971C8.13777 13.3948 8.55938 13.5587 9.00021 13.5587C9.44105 13.5587 9.86266 13.3948 10.1877 13.0971L10.9031 12.4582L16.6719 17.2967H1.32855L7.09734 12.4582ZM17.0759 6.00293L14.6253 8.19146V4.32308L17.0759 6.00293ZM8.3906 0.896779C8.75521 0.638457 9.24522 0.638319 9.6123 0.898427L11.3529 2.10887H6.6473L8.3906 0.896779ZM13.9222 2.81202V8.81935L9.71778 12.5742C9.71654 12.5752 9.7153 12.5763 9.71407 12.5774C9.30715 12.9513 8.69328 12.9513 8.28636 12.5774C8.28512 12.5763 8.28403 12.5752 8.28279 12.5742L4.07822 8.81935C4.07822 7.43696 4.07822 4.09443 4.07822 2.81202H13.9222ZM3.37508 8.19146L0.924522 6.00293L3.37508 4.32308V8.19146Z" fill="black"/>
+              <path d="M11.8126 15.8904H7.59376C7.39957 15.8904 7.24219 16.0479 7.24219 16.242C7.24219 16.4361 7.39957 16.5935 7.59376 16.5935H11.8126C12.0068 16.5935 12.1642 16.4361 12.1642 16.242C12.1642 16.0479 12.0068 15.8904 11.8126 15.8904Z" fill="black"/>
+              <path d="M9.00008 10.5464C9.19426 10.5464 9.35165 10.389 9.35165 10.1948C9.35165 10.0008 9.19426 9.84327 9.00008 9.84327C7.64309 9.84327 6.53908 8.7394 6.53908 7.38228C6.53908 6.0253 7.64309 4.92128 9.00008 4.92128C10.3571 4.92128 11.4611 6.0253 11.4611 7.38228V8.08542C11.4611 8.27933 11.3034 8.43699 11.1095 8.43699C10.9156 8.43699 10.7579 8.27933 10.7579 8.08542V7.38228C10.7579 6.41312 9.96937 5.62442 9.00008 5.62442C8.03078 5.62442 7.24222 6.41312 7.24222 7.38228C7.24222 8.35157 8.03078 9.14013 9.00008 9.14013C9.47264 9.14013 9.9018 8.9524 10.2181 8.64807C10.4051 8.94347 10.7347 9.14013 11.1095 9.14013C11.6911 9.14013 12.1642 8.66702 12.1642 8.08542V7.38228C12.1642 5.63761 10.7447 4.21814 9.00008 4.21814C7.2554 4.21814 5.83594 5.63761 5.83594 7.38228C5.83594 9.12709 7.2554 10.5464 9.00008 10.5464ZM9.00008 8.43699C8.41847 8.43699 7.94536 7.96388 7.94536 7.38228C7.94536 6.80081 8.41847 6.32756 9.00008 6.32756C9.58168 6.32756 10.0548 6.80081 10.0548 7.38228C10.0548 7.96388 9.58168 8.43699 9.00008 8.43699Z" fill="black"/>
+            </svg>
+          </div>
+            <p class="phone-number">{{ section.settings.email }}</p>
+        </div>
+
+        </div>
+      </div>
+
+      <div class="contact-form-wrapper">
+        {%- form 'contact', id: 'ContactForm', class: 'contact-form' -%}
+          {%- if form.posted_successfully? -%}
+            <h2 class="form-status form-status-list form__message form-status--message" tabindex="-1" autofocus>
+              {{ 'templates.contact.form.post_success' | t }}
+            </h2>
+          {%- elsif form.errors -%}
+            <div class="form__message">
+              <h2 class="form-status caption-large text-body form-status--message" role="alert" tabindex="-1" autofocus>
+                {{ 'templates.contact.form.error_heading' | t }}
+              </h2>
+            </div>
+            <ul class="form-status-list caption-large form-status--message" role="list">
+              <li>
+                <a href="#ContactForm-email" class="link">
+                  {{ form.errors.translated_fields.email | capitalize }}
+                  {{ form.errors.messages.email }}
+                </a>
+              </li>
+            </ul>
+          {%- endif -%}
+
+          <!-- Name Field -->
+          <div class="field">
+            <label for="ContactForm-name" class="field__label">Name</label>
+            <input
+              class="field__input"
+              type="text"
+              id="ContactForm-name"
+              name="contact[name]"
+              placeholder="Type Name"
+              value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}"
+              required
+            >
+          </div>
+
+          <!-- Email Field -->
+          <div class="field">
+            <label for="ContactForm-email" class="field__label">Email</label>
+            <input
+              type="email"
+              id="ContactForm-email"
+              class="field__input"
+              name="contact[email]"
+              spellcheck="false"
+              autocapitalize="off"
+              placeholder="Type Email Address"
+              value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}"
+              required
+            >
+          </div>
+
+          <!-- Number Field -->
+          <div class="field">
+            <label for="ContactForm-phone" class="field__label">Phone</label>
+            <input
+              type="tel"
+              id="ContactForm-phone"
+              class="field__input"
+              name="contact[phone]"
+              spellcheck="false"
+              autocapitalize="off"
+              placeholder="Type Phone Number"
+              value="{% if form.phone %}{{ form.phone }}{% elsif customer %}{{ customer.phone }}{% endif %}"
+              required
+            >
+          </div>
+
+          <!-- Message Field -->
+          <div class="field">
+            <label for="ContactForm-body" class="field__label">Message</label>
+            <textarea
+              rows="5"
+              id="ContactForm-body"
+              class="text-area field__input"
+              name="contact[message]"
+              placeholder="Type your message"
+              required
+            >{% if form.body %}{{ form.body }}{% endif %}</textarea>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="contact__button ">
+            <button type="submit" class="button">Send</button>
+          </div>
+        {%- endform -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Custom Contact",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "label": "Full Width Section",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "sec_id",
+      "label": "Section ID"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Contact us"
+    },
+    {
+      "type": "text",
+      "id": "des",
+      "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "address",
+      "label": "Address",
+      "default": "Monday - Friday, 8AM - 5PM CST"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "phone",
+      "label": "Phone Number"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "email",
+      "label": "Email",
+      "default": "customercare@bdraddy.com"
+    },
+    {
+      "type": "header",
+      "content": "Section Spacing Desktop"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Top",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Bottom",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 48
+    },
+    {
+      "type": "header",
+      "content": "Section Spacing Mobile"
+    },
+    {
+      "type": "range",
+      "id": "margin_top_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Top",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin Bottom",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_top_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_m",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 32
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Contact"
+    }
+  ]
+}
+{% endschema %}

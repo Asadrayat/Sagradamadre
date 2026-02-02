@@ -1,0 +1,471 @@
+{%- liquid
+  assign search_action = routes.search_url
+  assign search_placeholder = 'Start typing to search'
+  assign all_label = '-All-'
+  assign label_category = 'Categories'
+  assign resource_types = 'product,collection,article,page'  
+  assign collections_for_filter = settings.search_collections
+-%}
+
+<div class="custom__searchbar__wrap" data-search-bar>
+  <predictive-search data-loading-text="Loading..." data-resource-types="{{ resource_types }}">
+    <form action="{{ search_action }}" method="get" role="search" class="search-bar">
+      <div class="search-bar__grid">
+        <div class="search-bar__field search-bar__field--category">
+          <select
+            id="search-bar-category"
+            class="search-bar__select"
+            name="collection_url"
+            aria-label="{{ label_category | escape }}"
+          >
+            <option value="" selected>
+              {{- all_label | escape -}}
+            </option>
+            {%- if collections_for_filter and collections_for_filter.size > 0 -%}
+              {%- for collection in collections_for_filter -%}
+                <option value="{{ collection.url }}">
+                  {{- collection.title | escape -}}
+                </option>
+              {%- endfor -%}
+            {%- endif -%}
+          </select>
+        </div>
+
+        <div class="search-bar__field search-bar__field--query">
+          <div class="search-bar__input-wrap">
+            <input
+              class="search-bar__input"
+              id="search-bar-query"
+              type="search"
+              name="q"
+              value="{{ search.terms | escape }}"
+              placeholder="{{ search_placeholder | escape }}"
+              role="combobox"
+              aria-autocomplete="list"
+              aria-controls="search-bar-results"
+              aria-expanded="false"
+              aria-label="Search"
+              aria-haspopup="listbox"
+              autocorrect="off"
+              autocomplete="off"
+              autocapitalize="off"
+              spellcheck="false"
+            >
+            {% comment %} <button type="reset" class="reset__button field__button" aria-label="Reset" hidden>
+              {% render 'all-icons', name: 'cross' %}
+            </button> {% endcomment %}
+            <button class="search-bar__submit" aria-label="Search" type="submit">
+              <span class="search-bar__submit-label">
+                {% render 'all-icons', name: 'search' %}
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="search-bar__results" id="search-bar-results" data-predictive-search tabindex="-1" hidden></div>
+
+      <span class="predictive-search-status visually-hidden" role="status" aria-hidden="true"></span>
+    </form>
+  </predictive-search>
+</div>
+
+
+{% javascript %}
+class PredictiveSearch extends HTMLElement {
+  constructor() {
+    super();
+    this.cachedResults = {};
+    this.input = this.querySelector('input[type="search"]');
+    this.predictiveSearchResults = this.querySelector('[data-predictive-search]');
+    this.isOpen = false;
+    this.abortController = new AbortController();
+    this.searchTerm = '';
+    this.resourceTypes = this.dataset.resourceTypes;
+    this.errorMessage = 'Error fetching suggestions. Please try again.';
+
+    this.setupEventListeners();
+  }
+
+  setupEventListeners() {
+    const form = this.querySelector('form');
+    form.addEventListener('submit', this.onFormSubmit.bind(this));
+    this.input.addEventListener('input', this.debounce((event) => { this.onChange(event); }, 300).bind(this));
+    this.input.addEventListener('focus', this.onFocus.bind(this));
+    this.addEventListener('focusout', this.onFocusOut.bind(this));
+    this.addEventListener('keyup', this.onKeyup.bind(this));
+    this.addEventListener('keydown', this.onKeydown.bind(this));
+  }
+
+  debounce(fn, wait) {
+    let t;
+    return (...args) => {
+      clearTimeout(t);
+      t = setTimeout(() => fn.apply(this, args), wait);
+    };
+  }
+
+  getQuery() {
+    return this.input.value.trim();
+  }
+
+  onChange() {
+    const newSearchTerm = this.getQuery();
+    if (!this.searchTerm || !newSearchTerm.startsWith(this.searchTerm)) {
+      this.querySelector('#search-bar-results-groups-wrapper')?.remove();
+    }
+    this.updateSearchForTerm(this.searchTerm, newSearchTerm);
+    this.searchTerm = newSearchTerm;
+
+    if (!this.searchTerm.length) {
+      this.close(true);
+      return;
+    }
+
+    this.getSearchResults(this.searchTerm);
+  }
+
+  onFormSubmit(event) {
+    if (!this.getQuery().length || this.querySelector('[aria-selected="true"]')) event.preventDefault();
+  }
+
+  onFocus() {
+    const currentSearchTerm = this.getQuery();
+    if (!currentSearchTerm.length) return;
+
+    if (this.searchTerm !== currentSearchTerm) {
+      this.onChange();
+    } else if (this.getAttribute('results') === 'true') {
+      this.open();
+    } else {
+      this.getSearchResults(this.searchTerm);
+    }
+  }
+
+  onFocusOut() {
+    setTimeout(() => {
+      if (!this.contains(document.activeElement)) this.close();
+    });
+  }
+
+  onKeyup(event) {
+    if (!this.getQuery().length) this.close(true);
+    event.preventDefault();
+
+    switch (event.code) {
+      case 'ArrowUp':
+        this.switchOption('up');
+        break;
+      case 'ArrowDown':
+        this.switchOption('down');
+        break;
+      case 'Enter':
+        this.selectOption();
+        break;
+      case 'Escape':
+        this.close();
+        break;
+    }
+  }
+
+  onKeydown(event) {
+    if (event.code === 'ArrowUp' || event.code === 'ArrowDown') {
+      event.preventDefault();
+    }
+  }
+
+  updateSearchForTerm(previousTerm, newTerm) {
+    const searchForTextElement = this.querySelector('[data-predictive-search-search-for-text]');
+    if (searchForTextElement) {
+      const currentButtonText = searchForTextElement.innerText;
+      const newButtonText = currentButtonText.replace(previousTerm, newTerm);
+      searchForTextElement.innerText = newButtonText;
+    }
+  }
+
+  switchOption(direction) {
+    if (!this.getAttribute('open')) return;
+
+    const moveUp = direction === 'up';
+    const selectedElement = this.querySelector('[aria-selected="true"]');
+    const allVisibleElements = Array.from(this.querySelectorAll('.search-bar__result-item')).filter(
+      (element) => element.offsetParent !== null
+    );
+    let activeElementIndex = 0;
+
+    if (moveUp && !selectedElement) return;
+
+    let selectedElementIndex = -1;
+    let i = 0;
+
+    while (selectedElementIndex === -1 && i <= allVisibleElements.length) {
+      if (allVisibleElements[i] === selectedElement) {
+        selectedElementIndex = i;
+      }
+      i++;
+    }
+
+    if (!moveUp && selectedElement) {
+      activeElementIndex = selectedElementIndex === allVisibleElements.length - 1 ? 0 : selectedElementIndex + 1;
+    } else if (moveUp) {
+      activeElementIndex = selectedElementIndex === 0 ? allVisibleElements.length - 1 : selectedElementIndex - 1;
+    }
+
+    if (activeElementIndex === selectedElementIndex) return;
+
+    const activeElement = allVisibleElements[activeElementIndex];
+
+    activeElement.setAttribute('aria-selected', true);
+    if (selectedElement) selectedElement.setAttribute('aria-selected', false);
+
+    this.input.setAttribute('aria-activedescendant', activeElement.id);
+    activeElement.scrollIntoView({ block: 'nearest' });
+  }
+
+  selectOption() {
+    const selectedOption = this.querySelector('[aria-selected="true"] a, [aria-selected="true"] button');
+    if (selectedOption) selectedOption.click();
+  }
+
+  getSearchResults(searchTerm) {
+    const queryKey = searchTerm.replace(' ', '-').toLowerCase();
+    this.setLiveRegionLoadingState();
+
+    if (this.cachedResults[queryKey]) {
+      this.renderSearchResults(this.cachedResults[queryKey]);
+      return;
+    }
+
+    this.abortController.abort();
+    this.abortController = new AbortController();
+    const signal = this.abortController.signal;
+
+    const params = new URLSearchParams();
+    params.append('q', encodeURIComponent(searchTerm));
+    params.append('resources[type]', this.resourceTypes);
+    params.append('resources[limit]', '10');
+    params.append('resources[limit_scope]', 'each');
+    params.append('section_id', 'predictive-search');
+
+    fetch(`${routes.predictive_search_url}?${params.toString()}`, { signal })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(response.status);
+        }
+        return response.text();
+      })
+      .then((text) => {
+        const resultsMarkup = new DOMParser().parseFromString(text, 'text/html').querySelector('#shopify-section-predictive-search').innerHTML;
+        this.cachedResults[queryKey] = resultsMarkup;
+        this.renderSearchResults(resultsMarkup);
+      })
+      .catch((error) => {
+        if (error.name === 'AbortError') return;
+        this.renderErrorMessage();
+        this.close();
+        console.error(error);
+      });
+  }
+
+  renderErrorMessage() {
+    this.predictiveSearchResults.innerHTML = `<p class="predictive-search__error">${this.errorMessage}</p>`;
+  }
+
+  setLiveRegionLoadingState() {
+    this.statusElement = this.querySelector('.predictive-search-status');
+    this.loadingText = this.dataset.loadingText;
+
+    this.setLiveRegionText(this.loadingText);
+    this.setAttribute('loading', true);
+  }
+
+  setLiveRegionText(statusText) {
+    this.statusElement.setAttribute('aria-hidden', 'false');
+    this.statusElement.textContent = statusText;
+    setTimeout(() => {
+      this.statusElement.setAttribute('aria-hidden', 'true');
+    }, 1000);
+  }
+
+  renderSearchResults(resultsMarkup) {
+    this.predictiveSearchResults.innerHTML = resultsMarkup;
+    this.setAttribute('results', true);
+    this.setLiveRegionResults();
+    this.open();
+  }
+
+  setLiveRegionResults() {
+    this.removeAttribute('loading');
+    this.setLiveRegionText(this.querySelector('[data-predictive-search-live-region-count-value]').textContent);
+  }
+
+  open() {
+    this.setAttribute('open', true);
+    this.input.setAttribute('aria-expanded', true);
+    this.isOpen = true;
+  }
+
+  close(clearSearchTerm = false) {
+    if (clearSearchTerm) {
+      this.input.value = '';
+      this.removeAttribute('results');
+    }
+    const selected = this.querySelector('[aria-selected="true"]');
+    if (selected) selected.setAttribute('aria-selected', false);
+
+    this.input.setAttribute('aria-activedescendant', '');
+    this.removeAttribute('open');
+    this.removeAttribute('loading');
+    this.input.setAttribute('aria-expanded', false);
+    this.isOpen = false;
+  }
+}
+
+customElements.define('predictive-search', PredictiveSearch);
+{% endjavascript %}
+
+<!-- Separate file: sections/predictive-search.liquid -->
+{% comment %} For rendering the results {% endcomment %}
+{%- if predictive_search.performed -%}
+  {%- assign collections_size = predictive_search.resources.collections.size -%}
+  {%- assign products_size = predictive_search.resources.products.size -%}
+  {%- assign articles_size = predictive_search.resources.articles.size -%}
+  {%- assign pages_size = predictive_search.resources.pages.size -%}
+  {%- assign queries_size = predictive_search.resources.queries.size -%}
+  {%- assign first_column_results_size = queries_size | plus: collections_size | plus: pages_size | plus: articles_size -%}
+  <div id="search-bar-results" role="listbox">
+    {%- if first_column_results_size > 0 or products_size > 0 -%}
+      <div id="search-bar-results-groups-wrapper" class="predictive-search__results-groups-wrapper">
+    {%- endif -%}
+    {%- if first_column_results_size > 0 -%}
+      <div class="predictive-search__result-group">
+    {%- endif -%}
+    {%- if queries_size > 0 or collections_size > 0 -%}
+      <div class="predictive__search__categories">
+        <div class="predictive__search__group-title">Categories</div>
+        {%- for query in predictive_search.resources.queries -%}
+          <a href="{{ query.url }}" class="search-bar__result-item" role="option" id="search-bar-option-query-{{ forloop.index }}" aria-selected="false">
+            <div>
+              <div class="search-bar__result-title">{{ query.styled_text }}</div>
+            </div>
+          </a>
+        {%- endfor -%}
+        {%- for collection in predictive_search.resources.collections -%}
+          <a href="{{ collection.url }}" class="search-bar__result-item" role="option" id="search-bar-option-collection-{{ forloop.index }}" aria-selected="false">
+            {%- if collection.featured_image != blank -%}
+              <img
+                srcset="{{ collection.featured_image | image_url: width: 50 }} 50w,
+                        {{ collection.featured_image | image_url: width: 100 }} 100w"
+                src="{{ collection.featured_image | image_url: width: 50 }}"
+                sizes="50px"
+                alt="{{ collection.featured_image.alt | default: collection.title | escape }}"
+                loading="lazy"
+                width="50"
+                height="{{ 50 | divided_by: collection.featured_image.aspect_ratio }}"
+              >
+            {%- endif -%}
+            <div>
+              <div class="search-bar__result-title">{{ collection.title | escape }}</div>
+              <div class="search-bar__result-meta">Collection</div>
+            </div>
+          </a>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+    {%- if articles_size > 0 or pages_size > 0 -%}
+      <div class="predictive__search__articles">
+        <div class="predictive__search__group-title">Pages & Articles</div>
+        {%- for page in predictive_search.resources.pages -%}
+          <a href="{{ page.url }}" class="search-bar__result-item" role="option" id="search-bar-option-page-{{ forloop.index }}" aria-selected="false">
+            <div>
+              <div class="search-bar__result-title">{{ page.title | escape }}</div>
+              <div class="search-bar__result-meta">Page</div>
+            </div>
+          </a>
+        {%- endfor -%}
+        {%- for article in predictive_search.resources.articles -%}
+          <a href="{{ article.url }}" class="search-bar__result-item" role="option" id="search-bar-option-article-{{ forloop.index }}" aria-selected="false">
+            {%- if article.image != blank -%}
+              <img
+                srcset="{{ article.image | image_url: width: 50 }} 50w,
+                        {{ article.image | image_url: width: 100 }} 100w"
+                src="{{ article.image | image_url: width: 50 }}"
+                sizes="50px"
+                alt="{{ article.image.alt | default: article.title | escape }}"
+                loading="lazy"
+                width="50"
+                height="{{ 50 | divided_by: article.image.aspect_ratio }}"
+              >
+            {%- endif -%}
+            <div>
+              <div class="search-bar__result-title">{{ article.title | escape }}</div>
+              <div class="search-bar__result-meta">Article</div>
+            </div>
+          </a>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+    {%- if first_column_results_size > 0 -%}
+      </div>
+    {%- endif -%}
+    {%- if products_size > 0 -%}
+      <div class="predictive-search__result-group">
+        <div class="predictive__search__products">
+          <div class="predictive__search__group-title">Products</div>
+          {%- for product in predictive_search.resources.products -%}
+            <a href="{{ product.url }}" class="search-bar__result-item" role="option" id="search-bar-option-product-{{ forloop.index }}" aria-selected="false">
+              {%- if product.featured_media != blank -%}
+                <img
+                  srcset="{{ product.featured_media | image_url: width: 50 }} 50w,
+                          {{ product.featured_media | image_url: width: 100 }} 100w"
+                  src="{{ product.featured_media | image_url: width: 50 }}"
+                  sizes="50px"
+                  alt="{{ product.featured_media.alt | default: product.title | escape }}"
+                  loading="lazy"
+                  width="50"
+                  height="{{ 50 | divided_by: product.featured_media.aspect_ratio }}"
+                >
+              {%- endif -%}
+              <div>
+                <div class="search-bar__result-title">{{ product.title | escape }}</div>
+                <div class="search-bar__result-meta">Product</div>
+              </div>
+            </a>
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+    {%- if first_column_results_size > 0 or products_size > 0 -%}
+      </div>
+    {%- endif -%}
+
+    <div class="predictive-search__loading-state" hidden>
+      <!-- Loading spinner render -->
+      {% render 'icon-spinner' %}
+    </div>
+
+    {%- if products_size == 0 and first_column_results_size == 0 -%}
+      <p class="predictive-search__no-results">No results found for "{{ predictive_search.terms }}"</p>
+    {%- endif -%}
+
+    <button class="search-bar__result-item predictive__search__item--term" tabindex="-1" role="option" aria-selected="false">
+      <span data-predictive-search-search-for-text>
+        View all results for "{{ predictive_search.terms }}"
+      </span>
+      <!-- Arrow icon -->
+    </button>
+  </div>
+
+  <span class="hidden" data-predictive-search-live-region-count-value>
+    {%- liquid
+      assign total_results = products_size | plus: first_column_results_size
+      if total_results == 0
+        echo 'No results found for "' | append: predictive_search.terms | append: '"'
+      else
+        echo total_results | append: ' results'
+      endif
+    -%}
+  </span>
+{%- else -%}
+  <div id="search-bar-results" role="listbox"></div>
+{%- endif -%}

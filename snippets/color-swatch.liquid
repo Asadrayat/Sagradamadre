@@ -1,0 +1,34 @@
+<color-swatch-new data-swatch-group="{{ forloop.index }}">
+  {% assign color_option = product.options_by_name.Color %}
+  {% assign color_position = 'option' | append: color_option.position %}
+  {% assign prev_color_value = '' %}
+  {% assign is_active = true %}
+  {% assign swatch_count = 0 %}
+
+  {% for variant in product.variants %}
+    {% assign color_value = variant[color_position] %}
+    {% unless color_value == prev_color_value %}
+      {% assign prev_color_value = color_value %}
+      {% unless variant.featured_image == blank %}
+        {% assign color_label = color_value | downcase | strip | replace: ' ', '-' | replace: '/', '-' %}
+        {% assign color_img = color_label | append: '.png' %}
+        {% assign swatch_count = swatch_count | plus: 1 %}
+
+        <a
+          title="{{ color_label }}"
+          class="csn-a  {% if is_active %}active_{% endif %} {% if swatch_count > 4 %}card__swatch-item hidden{% endif %}"
+          href="{{ variant.url | append: '?variant=' | append: variant.id }}"
+          style="background: {{ color_label  }}; background-image: url({{ color_img | file_img_url }});"
+        >
+        </a>
+      {% endunless %}
+      {% assign is_active = false %}
+    {% endunless %}
+  {% endfor %}
+
+  {% if swatch_count > 4 %}
+    <a href="{{ product.url }}" class="toggle-button_ " data-swatch-group="{{ forloop.index }}"
+      >+{{ swatch_count | minus: 4 -}}
+    </a>
+  {% endif %}
+</color-swatch-new>
