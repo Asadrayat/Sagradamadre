@@ -144,3 +144,9 @@ The store organizes products into structured collections such as:
 # Shopify Theme Structure
 
 Example theme structure used during development.
+
+## Previews
+
+![Homepage]((https://i.ibb.co.com/N4LXHFL/sagradamadre-net-2.png))
+![Product page](https://i.ibb.co.com/wZf1qqXr/sagradamadre-net-products-incense-cosmos-sun-1.png)
+![Collection Page](https://i.ibb.co.com/FbFh3NzS/sagradamadre-net-collections-bestsellers-2.png)
