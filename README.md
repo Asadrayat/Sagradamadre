@@ -1,170 +1,146 @@
-# Sagradamadre
+# Sagrada Madre USA — Shopify B2B Ecommerce
 
-[Live store](https://sagradamadrestore.myshopify.com/?_ab=0&_bt=eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaEpJaVJ6WVdkeVlXUmhiV0ZrY21WemRHOXlaUzV0ZVhOb2IzQnBabmt1WTI5dEJqb0dSVlE9IiwiZXhwIjoiMjAyNi0wMi0wMlQxMjo0MDo0MC40NzNaI... )
+![Shopify](https://img.shields.io/badge/Platform-Shopify-7AB55C?logo=shopify&logoColor=white)
+![Liquid](https://img.shields.io/badge/Templating-Liquid-blue)
+![JavaScript](https://img.shields.io/badge/Frontend-JavaScript-yellow)
+![AJAX](https://img.shields.io/badge/API-AJAX-orange)
+![B2B](https://img.shields.io/badge/Commerce-B2B-purple)
 
-Sagradamadre is a Shopify storefront showcasing [your brand / product line]. This repository stores the theme and related configuration, documentation, and development guidance for customizing and maintaining the store.
-
----
-
-## Table of contents
-
-- [About](#about)
-- [Live demo](#live-demo)
-- [Features](#features)
-- [Tech stack](#tech-stack)
-- [Getting started (local development)](#getting-started-local-development)
-- [Working with the theme](#working-with-the-theme)
-- [Deployment](#deployment)
-- [Screenshots](#screenshots)
-- [Contributing](#contributing)
-- [License](#license)
-- [Contact](#contact)
+**Live Website**  
+http://sagradamadre.net/
 
 ---
 
-## About
+# Project Overview
 
-Short elevator pitch for Sagradamadre — what it sells, the target audience, and the brand values. Example:
+This project is a **custom Shopify B2B ecommerce website** developed for **Sagrada Madre USA**, a wholesale distributor of natural incense and ritual products.
 
-> Sagradamadre blends artisanal craft with modern design to offer curated home and lifestyle products. We focus on sustainable materials, limited runs, and beautifully-packaged goods.
+The website was **fully migrated from a Laravel ecommerce platform to Shopify** to simplify store management and create a scalable B2B purchasing experience.
 
-Update this section to describe your actual products, shipping regions, and unique selling points.
-
----
-
-## Live demo
-
-Visit the live storefront: https://sagradamadrestore.myshopify.com/
+The new Shopify implementation allows the business owner to **control nearly every aspect of the store directly from the Shopify admin panel**, eliminating the complexity of the previous Laravel admin system.
 
 ---
 
-## Features
+# Migration: Laravel → Shopify
 
-- Clean, mobile-first Shopify theme
-- Product collections and filters
-- Responsive product pages and cart UX
-- SEO-friendly markup and meta tags
-- Configurable home page sections (slideshow, featured collections, testimonials)
-- Simple analytics and marketing snippet placeholders
+### Previous System
+The store previously ran on a **custom Laravel ecommerce platform**.
 
-Customize this list to match implemented features.
+Issues included:
 
----
+- Complex admin dashboard
+- Difficult product management
+- Hardcoded backend logic
+- High maintenance requirements
 
-## Tech stack
+### Shopify Migration Benefits
 
-- Shopify (Liquid) — theme templating
-- HTML, CSS (Sass/SCSS optional)
-- JavaScript (vanilla or framework, if used)
-- Shopify CLI for local development and theme deployment
-- Optional: GitHub for version control, CI for deployment
+The new Shopify architecture provides:
 
----
+- Easy product & collection management
+- Drag-and-drop theme customization
+- Reliable ecommerce infrastructure
+- Scalable B2B features
 
-## Getting started (local development)
-
-Prerequisites:
-- Node.js (if you use npm scripts)
-- Shopify account with access to the store
-- Shopify CLI installed: https://shopify.dev/docs/themes/tools/cli
-
-Quick start (theme development):
-
-```bash
-# 1. Login to Shopify with CLI
-shopify login --store your-store.myshopify.com
-
-# 2. Clone this repo (if not already cloned)
-git clone https://github.com/Asadrayat/Sagradamadre.git
-cd Sagradamadre
-
-# 3. Start theme development (newer Shopify CLI)
-shopify theme dev
-
-# Alternative (older CLI):
-# shopify theme serve
-```
-
-Notes:
-- Replace `your-store.myshopify.com` with your store hostname.
-- The CLI will sync theme changes and provide a preview URL.
+Now **store management can be handled entirely by the business owner without developer support**.
 
 ---
 
-## Working with the theme
+# Tech Stack
 
-- Theme files live under the `theme/` (or root) directory — templates, sections, snippets, assets, config.
-- Common Liquid files to edit:
-  - `templates/product.liquid`
-  - `sections/header.liquid`
-  - `sections/footer.liquid`
-  - `snippets/product-card.liquid`
-- Keep translations and theme settings in `config/` (e.g., `settings_schema.json`) for customizable sections.
-
-Add more detailed paths if your repo has a specific layout.
-
----
-
-## Deployment
-
-Use Shopify CLI or the Shopify admin to publish the theme.
-
-Example (publish a theme with CLI):
-```bash
-# create/upload the theme and get theme id
-shopify theme push --theme [THEME_FOLDER]
-
-# publish by theme id through the admin or the CLI:
-shopify theme publish --theme-id=123456789
-```
-
-Always test changes on a draft theme before publishing to production.
+| Technology | Usage |
+|---|---|
+| Shopify | Ecommerce platform |
+| Liquid | Theme templating |
+| HTML5 | Layout & structure |
+| CSS3 | Styling |
+| JavaScript | Interactive features |
+| AJAX | Cart & dynamic interactions |
+| SparkLayer | B2B functionality |
 
 ---
 
-## Screenshots
+# B2B Implementation (SparkLayer)
 
-Add screenshots to /docs or /assets and reference them here.
+The store is designed primarily for **wholesale customers**.
 
-![Home page screenshot](docs/homepage.png)
-![Product page screenshot](docs/product.png)
+SparkLayer provides:
 
-(Replace images with real screenshots; remove placeholders if not used.)
+- Wholesale account registration
+- Tiered B2B pricing
+- Trade customer login
+- Bulk ordering experience
+- Wholesale cart system
 
----
-
-## Contributing
-
-Contributions welcome — especially theme improvements, accessibility fixes, and performance optimizations.
-
-Suggested workflow:
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feat/your-change`
-3. Make changes and test locally (`shopify theme dev`)
-4. Commit and push: `git push origin feat/your-change`
-5. Open a pull request describing your change
-
-Please include screenshots and testing notes in PR descriptions.
+This allows retailers to purchase products directly through the website.
 
 ---
 
-## License
+# Custom Development
 
-Specify your license here (e.g., MIT). If you are unsure, add a LICENSE file in the repo and reference it.
+This project includes extensive **custom Shopify theme development**.
+
+### Liquid Development
+
+Custom templates and dynamic Shopify logic were created for:
+
+- Product pages
+- Collection pages
+- Wholesale messaging
+- Custom sections
+- Dynamic content blocks
 
 ---
 
-## Contact
+### Frontend Development
 
-Project owner: Asadrayat  
-Store email / contact form: [add contact method]  
-Repo: https://github.com/Asadrayat/Sagradamadre
+Built using modern frontend practices:
+
+- Responsive HTML layouts
+- Modular CSS styling
+- JavaScript components
+- AJAX cart interactions
 
 ---
 
-If you'd like, I can:
-- add a logo and polished badges,
-- generate a short project description for the About section,
-- create screenshot images and optimized social preview metadata,
-- or commit this README directly to the repo (I can prepare a PR or push if you want).
-```
+# Key Features
+
+### Wholesale B2B Ecommerce
+Designed specifically for trade customers.
+
+### Custom Shopify Theme
+Fully custom theme built with Liquid.
+
+### AJAX Cart
+Dynamic cart updates without page reload.
+
+### Owner-Friendly CMS
+Shopify admin allows editing of:
+
+- Products
+- Collections
+- Pages
+- Homepage sections
+- Promotional banners
+
+---
+
+# Product Collections
+
+The store organizes products into structured collections such as:
+
+- Palo Santo Incense
+- Natural Incense
+- Herbs & Resins
+- Energetic Pyramids
+- Sacred Geometry
+- Cosmos Incense
+- Ritual Incense
+- Incense Kits
+- Incense Burners
+
+---
+
+# Shopify Theme Structure
+
+Example theme structure used during development.
